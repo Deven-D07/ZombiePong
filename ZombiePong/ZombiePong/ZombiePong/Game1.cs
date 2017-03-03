@@ -61,9 +61,11 @@ namespace ZombiePong
 
             paddle1 = new Sprite(new Vector2(20, 20), spritesheet, new Rectangle(0, 516, 25, 150), Vector2.Zero);
             paddle2 = new Sprite(new Vector2(970, 20), spritesheet, new Rectangle(32, 516, 25, 150), Vector2.Zero);
-            ball = new Sprite(new Vector2(700, 350), spritesheet, new Rectangle(76, 510, 40, 40), new Vector2(30, 0));
-
-            SpawnZombie(new Vector2(400, 400), new Vector2(-20, 0));
+            ball = new Sprite(new Vector2(700, 350), spritesheet, new Rectangle(76, 510, 40, 40), new Vector2(30, 20));
+           
+                SpawnZombie(new Vector2(400, 400), new Vector2(-20, 0));
+                SpawnZombie(new Vector2(400, 400), new Vector2(20, 0));
+            
         }
 
         /// <summary>
@@ -82,9 +84,11 @@ namespace ZombiePong
             for (int i = 1; i < 10; i++)
             {
                 zombie.AddFrame(new Rectangle(i * 165, 25, 160, 150));
+                
             }
 
             zombies.Add(zombie);
+
         }
 
         /// <summary>
@@ -97,6 +101,7 @@ namespace ZombiePong
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
+            paddle2.Location = new Vector2(paddle2.Location.X, ball.Center.Y);
 
             // TODO: Add your update logic here
             ball.Update(gameTime);
@@ -105,9 +110,22 @@ namespace ZombiePong
             {
                 zombies[i].Update(gameTime);
 
-                // Zombie logic goes here.. 
-                zombies[i].FlipHorizontal = false;
+                if (zombies[i].Velocity.X < 0)
+                    zombies[i].FlipHorizontal = true;
             }
+            if (paddle2.IsBoxColliding(ball.BoundingBoxRect))
+            {
+                ball.Velocity *= new Vector2(-300, -200);
+            }
+
+            if (paddle1.IsBoxColliding(ball.BoundingBoxRect))
+            {
+                ball.Velocity *= new Vector2(9000, 9000);
+            }
+            
+
+            MouseState ms = Mouse.GetState();
+            paddle1.Location = new Vector2(paddle1.Location.X, (float)ms.Y);
 
             base.Update(gameTime);
         }
