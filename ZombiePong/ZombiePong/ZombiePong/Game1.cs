@@ -105,7 +105,7 @@ namespace ZombiePong
 
             if (paddle2.IsBoxColliding(ball.BoundingBoxRect))
                 ball.Velocity *= new Vector2(100, 250);
-            if (paddle1.IsBoxColliding(ball.BoundingBoxRect))
+         
 
             
             MouseState ms = Mouse.GetState();
