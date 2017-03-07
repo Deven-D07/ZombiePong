@@ -19,6 +19,7 @@ namespace ZombiePong
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D background, spritesheet;
+        int score1, score2;
 
         Sprite paddle1, paddle2, ball;
 
@@ -47,6 +48,25 @@ namespace ZombiePong
             base.Initialize();
         }
 
+        public float constrain(float input, float low,float high)
+        {
+            float output;
+
+            if (input < low)
+            {
+                output = low;
+            }
+            else if (input > high) {
+                output = high;
+            }
+
+            else
+            {
+                output = input;
+            }
+            return output;
+        }
+
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
@@ -58,10 +78,12 @@ namespace ZombiePong
 
             background = Content.Load<Texture2D>("background");
             spritesheet = Content.Load<Texture2D>("spritesheet");
+            score1 = 0;
+            score2 = 0;
 
             paddle1 = new Sprite(new Vector2(20, 20), spritesheet, new Rectangle(0, 516, 25, 150), Vector2.Zero);
             paddle2 = new Sprite(new Vector2(970, 20), spritesheet, new Rectangle(32, 516, 25, 150), Vector2.Zero);
-            ball = new Sprite(new Vector2(700, 350), spritesheet, new Rectangle(76, 510, 40, 40), new Vector2(30, 20));
+            ball = new Sprite(new Vector2(700, 350), spritesheet, new Rectangle(76, 510, 40, 40), new Vector2(30, 50));
 
             SpawnZombie(new Vector2(400, 400), new Vector2(-20, 0));
             SpawnZombie(new Vector2(400, 400), new Vector2(20, 0));
@@ -96,7 +118,9 @@ namespace ZombiePong
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Allows the game to exit
+            Vector2 vel = ball.Velocity;
+            vel.Normalize();
+            vel = vel *180;
             
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
@@ -104,9 +128,12 @@ namespace ZombiePong
             paddle2.Location = new Vector2(paddle2.Location.X, ball.Center.Y);
 
             if (paddle2.IsBoxColliding(ball.BoundingBoxRect))
-                ball.Velocity *= new Vector2(100, 250);
+                ball.Velocity = new Vector2(-180, -80); ;
          
-
+            if (paddle1.IsBoxColliding(ball.BoundingBoxRect))
+            {
+                ball.Velocity = -vel;
+            }
             
             MouseState ms = Mouse.GetState();
             paddle1.Location = new Vector2(paddle1.Location.X, ms.Y);
@@ -122,6 +149,23 @@ namespace ZombiePong
                 if (zombies[i].Velocity.X < 80)
                     zombies[i].FlipHorizontal = false;
             }
+          
+            if(ball.Location.X < - 32)
+            {
+                ball.Location = new Vector2(200, 200);
+                ball.Velocity = new Vector2(180, 80);
+                score2++;
+            }
+            /*if(ball.Location.X > 800)
+            {
+                ball.Location = new Vector2(200, 200);
+                ball.Velocity = new Vector2(180, 80);
+                score1++;
+
+            } */
+
+            constrain(paddle1.Location.Y, 0, 600);
+           
 
             base.Update(gameTime);
         }
